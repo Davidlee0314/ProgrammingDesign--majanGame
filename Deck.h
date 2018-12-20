@@ -18,7 +18,7 @@ public:
     void addMajan(int, int, Deck*);
     void putDeckOut(int, int);
 
-    //在打牌前檢查是否聽
+    //檢查胡
     bool checkWin();
 
     //吃

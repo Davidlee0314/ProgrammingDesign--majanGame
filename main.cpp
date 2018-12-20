@@ -109,20 +109,34 @@ int nextPlayer(int now){
     return now;
 }
 
+
+
 int main(){
-    Deck* totals = initTotals();
-    cout << "現在亂數麻將長這樣：" << endl;
-    totals->print();
-    Deck* players[4] = {nullptr};
-    for(int i = 0; i < 4; i++){
-        players[i] = new Deck();
+//    Deck* totals = initTotals();
+//    cout << "現在亂數麻將長這樣：" << endl;
+//    totals->print();
+//    Deck* players[4] = {nullptr};
+//    for(int i = 0; i < 4; i++){
+//        players[i] = new Deck();
+//    }
+//
+//    int playerNow = 0;
+//    initRound(totals, players, 0, playerNow);
+//    cout << "玩家開局後亂數麻將長這樣：" << endl;
+//    totals->print();
+//    printPlayers(players);
+
+    int n = 0, type = 0, num = 0, index = 0;
+    Deck a = Deck();
+    cin >> n;
+    while(n != 0){
+        cin >> type >> num;
+        Majan m = {type, num};
+        a.deck.push_back(m);
+        n--;
+        index++;
     }
-
-    int playerNow = 0;
-    initRound(totals, players, 0, playerNow);
-    cout << "玩家開局後亂數麻將長這樣：" << endl;
-    totals->print();
-    printPlayers(players);
-
+    a.print();
+    cout << (a.checkWin() ? "胡" : "詐胡吧你");
     return 0;
 }
