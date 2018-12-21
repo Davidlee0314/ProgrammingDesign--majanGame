@@ -129,14 +129,27 @@ int main(){
     int n = 0, type = 0, num = 0, index = 0;
     Deck a = Deck();
     cin >> n;
-    while(n != 0){
+    while(n != 1){
         cin >> type >> num;
         Majan m = {type, num};
         a.deck.push_back(m);
         n--;
         index++;
     }
+    cin >> type >> num;
+    vector<Majan>eat;
+    Majan m = {type, num};
     a.print();
-    cout << (a.checkWin() ? "胡" : "詐胡吧你");
+    cout << "這張牌被打出來：";
+    m.print();
+    cout << endl;
+    cout << (a.checkEat(eat, &m) ? "可以吃" : "吃") << endl;
+    cout << "這些牌可以吃，兩個兩個一組" << endl;
+    for(int i = 0; i < eat.size(); i++){
+        eat[i].print();
+    }
+    a.eat(m, eat[0], eat[1]);
+    cout << endl;
+    a.print();
     return 0;
 }
