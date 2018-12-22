@@ -8,6 +8,10 @@
 using namespace std;
 
 bool getThree(vector<Majan>& a, int remain){
+//    for(int i = 0; i < a.size(); i++){
+//        a[i].print();
+//    }
+//    cout << endl;
     if(remain == 0 && a.empty()){
         return true;
     }else if(remain == 2 && a.size() == 2){
@@ -18,7 +22,6 @@ bool getThree(vector<Majan>& a, int remain){
         vector<Majan>temp;
         bool win;
         for(int i = 0; i <= a.size() - 3; i++){
-            //
             if(a[i].type == a[i + 1].type && a[i + 1].type == a[i + 2].type){
                 if((a[i].num + 1 == a[i + 1].num && a[i + 1].num + 1 == a[i + 2].num) ||
                    (a[i].num == a[i + 1].num && a[i + 1].num == a[i + 2].num)){
@@ -69,6 +72,68 @@ bool getThree(vector<Majan>& a, int remain){
     return false;
 };
 
+void fillPossMajan(vector<Majan>& a){
+    for(int i = 2; i < 6; i++){
+        if(i == 2){
+            int repeat = 1;
+            while(repeat != 0){
+                for (int j = 1; j < 8; j++){
+                    Majan temp = {i, j};
+                    a.push_back(temp);
+                }
+                repeat--;
+            }
+        }else{
+            int repeat = 1;
+            while(repeat != 0){
+                for (int j = 1; j < 10; j++){
+                    Majan temp = {i, j};
+                    a.push_back(temp);
+                }
+                repeat--;
+            }
+        }
+    }
+}
+
+bool Deck::checkListen(vector<Majan>& a){
+    vector<Majan>totals;
+    fillPossMajan(totals);
+
+    Deck temp;
+    for(int i = 0; i < deck.size(); i++){
+        temp.deck.push_back(deck[i]);
+    }
+
+    int pos = 0;
+    Majan m{}, n{};
+    for(int i = 0; i < temp.deck.size(); i++){
+        m = {temp.deck[i].type, temp.deck[i].num};
+        m.print();
+        temp.deck.erase(temp.deck.begin() + i, temp.deck.begin() + i + 1);
+
+        for(int j = 0; j < 34; j++){
+            temp.deck.push_back(totals[j]);
+            temp.sort();
+            if(temp.checkWin()){
+                n = {totals[j].type, totals[j].num, m.type, m.num};
+                a.push_back(n);
+            }
+            pos = temp.searchMajan(&totals[j]);
+            temp.deck.erase(temp.deck.begin() + pos, temp.deck.begin() + pos + 1);
+        }
+        temp.deck.push_back(m);
+        temp.sort();
+    }
+    temp.deck.clear();
+    return !a.empty();
+}
+
+void Deck::delMajan(Majan* m, int num){
+    int pos = this->searchMajan(m);
+    this->deck.erase(this->deck.begin() + pos, this->deck.begin() + pos + num);
+}
+
 void Deck::eat(Majan a, Majan b, Majan c){
     if(a.compare(&b)){
         this->deckOut.push_back(a);
@@ -85,25 +150,22 @@ void Deck::eat(Majan a, Majan b, Majan c){
             this->deckOut.push_back(a);
         }
     }
+    this->delMajan(&a, 1);
+    this->delMajan(&b, 1);
+    this->delMajan(&c, 1);
 }
 
 void Deck::gan(int pos, Majan m){
     if(pos != -1){
         this->deckOut.push_back(m);
-        for(int i = pos; i < pos + 3; i++){
-            this->deckOut.push_back(this->deck[i]);
-        }
-        this->deck.erase(this->deck.begin() + pos, this->deck.begin() + pos + 3);
+        this->putDeckOut(pos, 3);
     }
 }
 
 void Deck::pon(int pos, Majan m){
     if(pos != -1){
         this->deckOut.push_back(m);
-        for(int i = pos; i < pos + 2; i++){
-            this->deckOut.push_back(this->deck[i]);
-        }
-        this->deck.erase(this->deck.begin() + pos, this->deck.begin() + pos + 2);
+        this->putDeckOut(pos, 2);
     }
 }
 
@@ -216,17 +278,6 @@ int Deck::checkPon(Majan* a){
     }
 }
 
-int Deck::searchMajan(Majan* m){
-    int pos = -1;
-    for(int i = 0; i < this->deck.size(); i++){
-        if(this->deck[i].type == m->type && this->deck[i].num == m->num){
-            pos = i;
-            return pos;
-        }
-    }
-    return pos;
-}
-
 bool Deck::checkWin(){
     vector<Majan> word;
     vector<Majan> wan;
@@ -257,11 +308,26 @@ bool Deck::checkWin(){
         }else{
 //            cout << getThree(word, wordRemain) << getThree(wan, wanRemain) <<
 //            getThree(ton, tonRemain) << getThree(tia, tiaRemain);
-
-            return getThree(word, wordRemain) && getThree(wan, wanRemain)
-                   && getThree(ton, tonRemain) && getThree(tia, tiaRemain);
+            bool win = getThree(word, wordRemain) && getThree(wan, wanRemain)
+                       && getThree(ton, tonRemain) && getThree(tia, tiaRemain);
+            word.clear();
+            wan.clear();
+            tia.clear();
+            ton.clear();
+            return win;
         };
     }
+}
+
+int Deck::searchMajan(Majan* m){
+    int pos = -1;
+    for(int i = 0; i < this->deck.size(); i++){
+        if(this->deck[i].type == m->type && this->deck[i].num == m->num){
+            pos = i;
+            return pos;
+        }
+    }
+    return pos;
 }
 
 void Deck::addMajan(int pos, int num, Deck* totals){
@@ -281,7 +347,7 @@ void Deck::putDeckOut(int pos, int num){
 void Deck::print(){
     cout << "<手牌>" << endl;
     for(int i = 0; i < this->deck.size(); i++){
-        if(i % 16 == 0 && i != 0){
+        if(i % 36 == 0 && i != 0){
             cout << endl;
         }
         this->deck[i].print();
@@ -295,7 +361,16 @@ void Deck::print(){
 
 void Deck::sort(){
     std::sort(this->deck.begin(), this->deck.end(),
-              [](Majan a, Majan b){ return a.compare(&b); });
+              [](const Majan a,const Majan b){
+                    bool right = false;
+                      if(b.type > a.type){
+                          right = true;
+                      }else if(b.type == a.type){
+                          if(b.num > a.num){
+                              right = true;
+                          }
+                      }
+                      return right;});
 }
 
 

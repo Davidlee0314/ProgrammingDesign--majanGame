@@ -22,28 +22,28 @@ void Majan::print(){
         case 1:
             switch (this->num){
                 case 1:
-                    cout << "春 ";
+                    cout << "春   ";
                     break;
                 case 2:
-                    cout << "夏 ";
+                    cout << "夏   ";
                     break;
                 case 3:
-                    cout << "秋 ";
+                    cout << "秋   ";
                     break;
                 case 4:
-                    cout << "冬 ";
+                    cout << "冬   ";
                     break;
                 case 5:
-                    cout << "梅 ";
+                    cout << "梅   ";
                     break;
                 case 6:
-                    cout << "蘭 ";
+                    cout << "蘭   ";
                     break;
                 case 7:
-                    cout << "竹 ";
+                    cout << "竹   ";
                     break;
                 case 8:
-                    cout << "菊 ";
+                    cout << "菊   ";
                     break;
                 default:
                     break;
@@ -52,25 +52,25 @@ void Majan::print(){
         case 2:
             switch (this->num){
                 case 1:
-                    cout << "東 ";
+                    cout << "東   ";
                     break;
                 case 2:
-                    cout << "南 ";
+                    cout << "南   ";
                     break;
                 case 3:
-                    cout << "西 ";
+                    cout << "西   ";
                     break;
                 case 4:
-                    cout << "北 ";
+                    cout << "北   ";
                     break;
                 case 5:
-                    cout << "中 ";
+                    cout << "中   ";
                     break;
                 case 6:
-                    cout << "發 ";
+                    cout << "發   ";
                     break;
                 case 7:
-                    cout << "白 ";
+                    cout << "白   ";
                     break;
                 default:
                     break;

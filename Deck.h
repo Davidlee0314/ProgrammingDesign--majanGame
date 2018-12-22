@@ -9,8 +9,9 @@ using namespace std;
 #define MAJANGAME_DECK_H
 
 class Deck{
+private:
+    void delMajan(Majan*, int);
 public:
-    bool listen;
     vector<Majan> deck;
     vector<Majan> deckOut;
     void print();
@@ -19,14 +20,16 @@ public:
     void putDeckOut(int, int);
     int searchMajan(Majan*);
 
-    //檢查胡、碰、槓、吃
+    //檢查胡，必須把打出來或摸到的牌傳入
     bool checkWin();
-    //傳出可以碰的牌的位置(第一張)
+    //檢查碰，傳出可以碰的牌的位置(第一張)
     int checkPon(Majan*);
-    //傳出可以槓的牌的位置(第一張)
+    //檢查槓，傳出可以槓的牌的位置(第一張)
     int checkGan(Majan*);
-    //若可以吃，將傳入的陣列填滿，長度 = 可以吃的方式 * 2
+    //檢查吃，若可以吃，將傳入的陣列填滿，長度 = 可以吃的方式 * 2
     bool checkEat(vector<Majan>&, Majan*);
+    //檢查聽，必須把打出來或摸到的牌傳入
+    bool checkListen(vector<Majan>&);
 
     //吃
     void eat(Majan, Majan, Majan);
