@@ -4,6 +4,7 @@
 #include "Player.h"
 
 Player::Player() {
+    win = false;
     host = false;
     listen = false;
     multiHost = 0;

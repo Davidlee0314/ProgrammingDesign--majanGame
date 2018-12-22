@@ -2,6 +2,7 @@
 // Created by User on 2018/12/19.
 //
 #include "Majan.h"
+#include "Option.h"
 #include <vector>
 using namespace std;
 
@@ -14,14 +15,16 @@ private:
 public:
     vector<Majan> deck;
     vector<Majan> deckOut;
+    vector<Option> listenOption;
     void print();
     void sort();
-    void addMajan(int, int, Deck*);
+    void addMajan(int&, int, Deck*);
+    void addMajanBack(int&, int, Deck*);
     void putDeckOut(int, int);
     int searchMajan(Majan*);
 
     //檢查胡，必須把打出來或摸到的牌傳入
-    bool checkWin();
+    bool checkHoo();
     //檢查碰，傳出可以碰的牌的位置(第一張)
     int checkPon(Majan*);
     //檢查槓，傳出可以槓的牌的位置(第一張)
@@ -29,7 +32,7 @@ public:
     //檢查吃，若可以吃，將傳入的陣列填滿，長度 = 可以吃的方式 * 2
     bool checkEat(vector<Majan>&, Majan*);
     //檢查聽，必須把打出來或摸到的牌傳入
-    bool checkListen(vector<Majan>&);
+    bool checkListen();
 
     //吃
     void eat(Majan, Majan, Majan);
@@ -37,6 +40,7 @@ public:
     void pon(int, Majan);
     //槓
     void gan(int, Majan);
+    void darkGan();
     //胡
     //算台
 };

@@ -2,6 +2,7 @@
 // Created by User on 2018/12/19.
 //
 #include "Deck.h"
+#include "Option.h"
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -96,7 +97,8 @@ void fillPossMajan(vector<Majan>& a){
     }
 }
 
-bool Deck::checkListen(vector<Majan>& a){
+bool Deck::checkListen(){
+    listenOption.clear();
     vector<Majan>totals;
     fillPossMajan(totals);
 
@@ -108,25 +110,28 @@ bool Deck::checkListen(vector<Majan>& a){
     int pos = 0;
     Majan m{}, n{};
     for(int i = 0; i < temp.deck.size(); i++){
+        Option o = Option(temp.deck[i]);
         m = {temp.deck[i].type, temp.deck[i].num};
-        m.print();
+//        m.print();
         temp.deck.erase(temp.deck.begin() + i, temp.deck.begin() + i + 1);
 
         for(int j = 0; j < 34; j++){
             temp.deck.push_back(totals[j]);
             temp.sort();
-            if(temp.checkWin()){
-                n = {totals[j].type, totals[j].num, m.type, m.num};
-                a.push_back(n);
+            if(temp.checkHoo()){
+                o.addOption(totals[j]);
             }
             pos = temp.searchMajan(&totals[j]);
             temp.deck.erase(temp.deck.begin() + pos, temp.deck.begin() + pos + 1);
+        }
+        if(!o.listenTo.empty()){
+            listenOption.push_back(o);
         }
         temp.deck.push_back(m);
         temp.sort();
     }
     temp.deck.clear();
-    return !a.empty();
+    return !listenOption.empty();
 }
 
 void Deck::delMajan(Majan* m, int num){
@@ -150,7 +155,6 @@ void Deck::eat(Majan a, Majan b, Majan c){
             this->deckOut.push_back(a);
         }
     }
-    this->delMajan(&a, 1);
     this->delMajan(&b, 1);
     this->delMajan(&c, 1);
 }
@@ -159,6 +163,15 @@ void Deck::gan(int pos, Majan m){
     if(pos != -1){
         this->deckOut.push_back(m);
         this->putDeckOut(pos, 3);
+    }
+}
+
+void Deck::darkGan(){
+    sort();
+    for(int i = 3; i < deck.size(); i++){
+        if(deck[i] == deck[i - 1] && deck[i - 1] == deck[i - 2] && deck[i - 2] == deck[i - 3]){
+            putDeckOut(i - 3, 4);
+        }
     }
 }
 
@@ -250,7 +263,7 @@ bool Deck::checkEat(vector<Majan>& eat, Majan* m){
 int Deck::checkGan(Majan* a){
     bool canGan = false;
     int pos = this->searchMajan(a);
-    if(pos != -1){
+    if(pos != -1 && pos + 2 < deck.size()){
         if(this->deck[pos + 1].type == a->type && this->deck[pos + 1].num == a->num
             && this->deck[pos + 2].type == a->type && this->deck[pos + 2].num == a->num){
             canGan = true;
@@ -266,7 +279,7 @@ int Deck::checkGan(Majan* a){
 int Deck::checkPon(Majan* a){
     bool canPon = false;
     int pos = this->searchMajan(a);
-    if(pos != -1){
+    if(pos != -1 && pos + 1 < deck.size()){
         if(this->deck[pos + 1].type == a->type && this->deck[pos + 1].num == a->num){
             canPon = true;
         }
@@ -278,7 +291,7 @@ int Deck::checkPon(Majan* a){
     }
 }
 
-bool Deck::checkWin(){
+bool Deck::checkHoo(){
     vector<Majan> word;
     vector<Majan> wan;
     vector<Majan> ton;
@@ -330,16 +343,77 @@ int Deck::searchMajan(Majan* m){
     return pos;
 }
 
-void Deck::addMajan(int pos, int num, Deck* totals){
+void Deck::addMajan(int& pos, int num, Deck* totals){
+    vector<Majan> temp;
+    Majan m = {0, 0};
     for(int i = 0; i < num; i++){
         this->deck.push_back(totals->deck[pos + i]);
+        temp.push_back(m);
     }
     totals->deck.erase(totals->deck.begin() + pos, totals->deck.begin() + pos + num);
+    totals->deck.insert(totals->deck.begin() + pos, temp.begin(), temp.end());
+    pos += num;
+    if(pos > 143){
+        pos -= 144;
+    }
+    temp.clear();
+}
+
+void Deck::addMajanBack(int& backPos, int num, Deck* totals) {
+    vector<Majan> temp;
+    Majan m = {0, 0};
+    bool CrossZero = false;
+    int end = backPos - num;
+    if(end < 0){
+        if(end != -1){
+            CrossZero = !CrossZero;
+        }
+        end += 144;
+    }
+    if(CrossZero){
+        vector<Majan> temp2;
+        for(int i = 0; i < num; i++) {
+            if(backPos - i >= 0){
+                this->deck.push_back(totals->deck[backPos - i]);
+                temp.push_back(m);
+            }else{
+                this->deck.push_back(totals->deck[backPos - i + 144]);
+                temp2.push_back(m);
+            }
+        }
+        totals->deck.erase(totals->deck.begin(), totals->deck.begin() + backPos + 1);
+        totals->deck.insert(totals->deck.begin(), temp.begin(), temp.end());
+        totals->deck.erase(totals->deck.begin() + end, totals->deck.end());
+        totals->deck.insert(totals->deck.begin() + end, temp2.begin(), temp2.end());
+    }else{
+        for(int i = 0; i < num; i++) {
+            this->deck.push_back(totals->deck[backPos - i]);
+            temp.push_back(m);
+        }
+        if(end == 143){
+            totals->deck.erase(totals->deck.begin(), totals->deck.begin() + backPos + 1);
+            totals->deck.insert(totals->deck.begin(), temp.begin(), temp.end());
+        }else{
+            totals->deck.erase(totals->deck.begin() + end + 1, totals->deck.begin() + backPos + 1);
+            totals->deck.insert(totals->deck.begin() + end + 1, temp.begin(), temp.end());
+        }
+
+    }
+    backPos = end;
+    temp.clear();
 }
 
 void Deck::putDeckOut(int pos, int num){
-    for(int i = 0; i < num; i++){
-        this->deckOut.push_back(this->deck[pos + i]);
+    if(num == 1){
+        if(this->deck[pos].type == 1){
+            this->deckOut.insert(deckOut.begin(), this->deck[pos]);
+        }else{
+            this->deckOut.push_back(this->deck[pos]);
+        }
+    }else{
+        for(int i = 0; i < num; i++){
+            this->deckOut.push_back(this->deck[pos + i]);
+        }
     }
     this->deck.erase(this->deck.begin() + pos, this->deck.begin() + pos + num);
 }

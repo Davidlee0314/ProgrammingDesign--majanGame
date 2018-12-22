@@ -28,7 +28,6 @@ int nextPlayer(int now){
 
 int calcPos(int diceNum){
     int remain = diceNum % 4;
-    cout << "Dice " << diceNum << endl;
     if(remain == 1){
         return 2 * diceNum;
     }else if(remain == 2){
@@ -50,6 +49,7 @@ Round::Round(Player* p1, Player* p2, Player* p3, Player* p4){
     playerList[1] = p2;
     playerList[2] = p3;
     playerList[3] = p4;
+    justAction = false;
 }
 
 void Round::initTotals() {
@@ -85,8 +85,13 @@ void Round::initTotals() {
 void Round::initRound(int diceNum){
     initTotals();
     int majanNow = 64;
-    int pos = calcPos(diceNum);
-    open = pos;
+    int host = playerNow;
+    pos = calcPos(diceNum);
+//    pos = 3;
+    backPos = pos - 1;
+    open = pos % 4;
+
+    cout << "Dice " << diceNum << endl;
     cout << "Pos " << pos << endl;
 
     for(int i = 0; i < 4; i++){
@@ -94,8 +99,6 @@ void Round::initRound(int diceNum){
             playerNow = i;
         }
     }
-
-    totals->print();
 
     while(majanNow != 0){
         bool oneCircle = false;
@@ -113,16 +116,18 @@ void Round::initRound(int diceNum){
         }
         playerNow = nextPlayer(playerNow);
         majanNow -= 4;
-        cout << totals->deck.size() << endl;
-        totals->print();
     }
-
-    totals->print();
 
     //開門、排列
     playerList[playerNow]->ownedDeck->addMajan(pos, 1, totals);
     for(int i = 0; i < 4; i++){
         playerList[i]->ownedDeck->sort();
+    }
+
+    //print
+    totals->print();
+    for(int i = 0; i < 4; i++){
+        playerList[i]->ownedDeck->print();
     }
 
     //補花
@@ -131,7 +136,7 @@ void Round::initRound(int diceNum){
     int flowerNum = 0;
     while(!allFlower){
         for(int i = 0; i < 8; i++){
-            if(playerList[playerNow]->ownedDeck->deck[i].type == 2){
+            if(playerList[playerNow]->ownedDeck->deck[i].type != 1){
                 break;
             }else{
                 flowerNum ++;
@@ -141,7 +146,7 @@ void Round::initRound(int diceNum){
             flower[playerNow] = true;
         }else{
             playerList[playerNow]->ownedDeck->putDeckOut(0, flowerNum);
-            playerList[playerNow]->ownedDeck->addMajan((int)totals->deck.size() - flowerNum, flowerNum, totals);
+            playerList[playerNow]->ownedDeck->addMajanBack(backPos, flowerNum, totals);
         }
         flowerNum = 0;
         playerList[playerNow]->ownedDeck->sort();
@@ -153,7 +158,31 @@ void Round::initRound(int diceNum){
             }
         }
     }
+    playerNow = host;
+
+    //print
+    totals->print();
     for(int i = 0; i < 4; i++){
         playerList[i]->ownedDeck->print();
     }
+}
+
+bool Round::haveWinner(){
+    bool haveWinner = false;
+    for(int i = 0; i < 4; i++){
+        if(playerList[i]->win){
+            haveWinner = true;
+        };
+    }
+    return haveWinner;
+}
+
+int Round::playerNext() {
+    int next = playerNow;
+    if(playerNow == 3){
+        next = 0;
+    }else{
+        next += 1;
+    }
+    return next;
 }

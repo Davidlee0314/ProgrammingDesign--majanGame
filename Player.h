@@ -8,6 +8,7 @@
 
 class Player{
 public:
+    bool win;
     bool host;
     bool listen;
     int multiHost;

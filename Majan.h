@@ -35,8 +35,6 @@ class Majan{
 public:
     int type;
     int num;
-    int type2;
-    int num1;
     bool compare(Majan*);
     void print();
     bool operator ==(Majan a);

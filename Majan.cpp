@@ -19,6 +19,15 @@ bool Majan::operator<=(Majan a) {
 
 void Majan::print(){
     switch (this->type){
+        case 0:
+            switch (this->num){
+                case 0:
+                    cout << "<空> ";
+                    break;
+                default:
+                    break;
+            }
+            break;
         case 1:
             switch (this->num){
                 case 1:
