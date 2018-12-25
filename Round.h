@@ -11,6 +11,10 @@
 class Round{
 private:
     void initTotals();
+
+    //開局
+    void initRound(int);
+
 public:
     //東 南 西 北 0 1 2 3
     int wind;
@@ -21,16 +25,22 @@ public:
     //拿牌的地方
     int pos;
     int backPos;
-    //觸發此玩家的情況是否為吃碰槓
-    bool justAction;
+    //上一局是否為流局
+    bool failToFindWinner;
 
     Player** playerList;
     Deck* totals;
     Deck* haidi;
     Round(Player*, Player*, Player*, Player*);
-    void initRound(int);
-    bool haveWinner();
     int playerNext();
+
+    //單局暫停條件
+    bool haveWinner();
+    int posPre16();
+
+    //遊玩需要
+    void singleGame();
+    void multiGame();
 };
 
 

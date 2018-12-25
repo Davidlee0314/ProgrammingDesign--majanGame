@@ -24,7 +24,7 @@ bool getThree(vector<Majan>& a, int remain){
         bool win;
         for(int i = 0; i <= a.size() - 3; i++){
             if(a[i].type == a[i + 1].type && a[i + 1].type == a[i + 2].type){
-                if((a[i].num + 1 == a[i + 1].num && a[i + 1].num + 1 == a[i + 2].num) ||
+                if(((a[i].num + 1 == a[i + 1].num && a[i + 1].num + 1 == a[i + 2].num) && a[i].type != 2) ||
                    (a[i].num == a[i + 1].num && a[i + 1].num == a[i + 2].num)){
                     for(int j = 0; j < a.size(); j++){
                         if(j != i && j != i + 1 && j != i + 2){
@@ -36,32 +36,34 @@ bool getThree(vector<Majan>& a, int remain){
                         return true;
                     }
                 }else{
-                    int plusOne = 0, plusTwo = 0;
-                    for(int j = i + 1; j < a.size(); j++){
-                        if(a[j].num > a[i].num + 2 || a[j].type != a[i].type){
-                            break;
-                        }else{
-                            if(plusOne == 0){
-                                if(a[j].num == a[i].num + 1){
-                                    plusOne = j;
+                    if(a[i].type != 2){
+                        int plusOne = 0, plusTwo = 0;
+                        for(int j = i + 1; j < a.size(); j++){
+                            if(a[j].num > a[i].num + 2 || a[j].type != a[i].type){
+                                break;
+                            }else{
+                                if(plusOne == 0){
+                                    if(a[j].num == a[i].num + 1){
+                                        plusOne = j;
+                                    }
                                 }
-                            }
-                            if(plusTwo == 0){
-                                if(a[j].num == a[i].num + 2){
-                                    plusTwo = j;
+                                if(plusTwo == 0){
+                                    if(a[j].num == a[i].num + 2){
+                                        plusTwo = j;
+                                    }
                                 }
                             }
                         }
-                    }
-                    if(plusOne != 0 && plusTwo != 0){
-                        for(int j = 0; j < a.size(); j++){
-                            if(j != i && j != plusOne && j != plusTwo){
-                                temp.push_back(a[j]);
+                        if(plusOne != 0 && plusTwo != 0){
+                            for(int j = 0; j < a.size(); j++){
+                                if(j != i && j != plusOne && j != plusTwo){
+                                    temp.push_back(a[j]);
+                                }
                             }
-                        }
-                        win = getThree(temp, remain);
-                        if(win){
-                            return true;
+                            win = getThree(temp, remain);
+                            if(win){
+                                return true;
+                            }
                         }
                     }
                 }
@@ -118,14 +120,27 @@ bool Deck::checkListen(){
         for(int j = 0; j < 34; j++){
             temp.deck.push_back(totals[j]);
             temp.sort();
+//            for(int l = 0; l < temp.deck.size(); l++){
+//                temp.deck[l].print();
+//            }
+//            cout << endl;
             if(temp.checkHoo()){
+//                cout << "上面這副有聽" << endl;
                 o.addOption(totals[j]);
             }
             pos = temp.searchMajan(&totals[j]);
             temp.deck.erase(temp.deck.begin() + pos, temp.deck.begin() + pos + 1);
         }
         if(!o.listenTo.empty()){
-            listenOption.push_back(o);
+            bool canAdd = true;
+            for(int j = 0; j < listenOption.size(); j++){
+                if(o.giveOut == listenOption[j].giveOut){
+                    canAdd = false;
+                }
+            }
+            if(canAdd){
+                listenOption.push_back(o);
+            }
         }
         temp.deck.push_back(m);
         temp.sort();
@@ -166,12 +181,10 @@ void Deck::gan(int pos, Majan m){
     }
 }
 
-void Deck::darkGan(){
-    sort();
-    for(int i = 3; i < deck.size(); i++){
-        if(deck[i] == deck[i - 1] && deck[i - 1] == deck[i - 2] && deck[i - 2] == deck[i - 3]){
-            putDeckOut(i - 3, 4);
-        }
+void Deck::darkGan(int pos){
+    if(pos != -1){
+        putDeckOut((int)deck.size() - 1, 1);
+        putDeckOut(pos, 3);
     }
 }
 
@@ -285,6 +298,22 @@ int Deck::checkPon(Majan* a){
         }
     }
     if(canPon){
+        return pos;
+    }else{
+        return -1;
+    }
+}
+
+int Deck::checkDarkGan() {
+    bool canDarkGan = false;
+    int pos = searchMajan(&deck[deck.size() - 1]);
+    if(pos != -1 && pos + 2 < deck.size() - 1){
+        if(this->deck[pos + 1] == this->deck[pos]
+           && this->deck[pos + 2] == this->deck[pos]){
+            canDarkGan = true;
+        }
+    }
+    if(canDarkGan){
         return pos;
     }else{
         return -1;
@@ -406,7 +435,10 @@ void Deck::addMajanBack(int& backPos, int num, Deck* totals) {
 void Deck::putDeckOut(int pos, int num){
     if(num == 1){
         if(this->deck[pos].type == 1){
-            this->deckOut.insert(deckOut.begin(), this->deck[pos]);
+            vector<Majan>temp;
+            temp.push_back(deck[pos]);
+            this->deckOut.insert(deckOut.begin(), temp.begin(), temp.end());
+            temp.clear();
         }else{
             this->deckOut.push_back(this->deck[pos]);
         }
