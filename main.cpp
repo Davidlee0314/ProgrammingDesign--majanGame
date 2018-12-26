@@ -21,7 +21,6 @@ using namespace std;
  * 6. 搶碰 V
  * 7. 完整局 V
  * 8. 算台
- * 9. 讓 AI 槓
 */
 
 int main(){
