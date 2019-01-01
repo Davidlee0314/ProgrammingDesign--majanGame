@@ -1,10 +1,7 @@
-//
-// Created by User on 2018/12/19.
-//
-
-#ifndef MAJANGAME_MAJAN_H
-#define MAJANGAME_MAJAN_H
-
+#ifndef MAJANGAME_MAJAN_HPP
+#define MAJANGAME_MAJAN_HPP
+#include "Texture.hpp"
+#include <SDL.h>
 /*
  * Majan
  *   type: 1 for 花
@@ -40,6 +37,17 @@ public:
     bool operator ==(Majan a);
     bool operator >=(Majan a);
     bool operator <=(Majan a);
+    Texture* tMajan;
+    SDL_Rect rect;
+    
+    
+    Majan();
+    Majan(int type, int num, SDL_Renderer* rR);
+    ~Majan();
+    void readImage(SDL_Renderer* rR);
+    void drawMajan(SDL_Renderer* rR, int x, int y, int h, int w);
+    void drawMajanOpacity(SDL_Renderer* rR, int x, int y, int h, int w, double a);
+    void drawMajanRotate(SDL_Renderer* rR, int x, int y, int h, int w, double angle);
 };
 
 #endif //MAJANGAME_MAJAN_H

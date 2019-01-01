@@ -1,13 +1,10 @@
-//
-// Created by User on 2018/12/22.
-//
-
-#include "Majan.h"
-#include "Option.h"
+#include "Majan.hpp"
+#include "Option.hpp"
 #include <iostream>
 
 Option::Option(Majan a){
-    giveOut = {a.type, a.num};
+    giveOut.type = a.type;
+    giveOut.num = a.num;
 }
 
 void Option::addOption(Majan a) {

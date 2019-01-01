@@ -1,13 +1,9 @@
-//
-// Created by User on 2018/12/22.
-//
-
-#include "Majan.h"
+#include "Majan.hpp"
 #include <vector>
 using namespace std;
 
-#ifndef MAJANGAME_OPTION_H
-#define MAJANGAME_OPTION_H
+#ifndef MAJANGAME_OPTION_HPP
+#define MAJANGAME_OPTION_HPP
 class Option{
 public:
     Majan giveOut;

@@ -1,18 +1,15 @@
-//
-// Created by User on 2018/12/19.
-//
-#include "Deck.h"
-#include "Option.h"
+#include "Deck.hpp"
+#include "Option.hpp"
 #include <iostream>
 #include <algorithm>
 #include <vector>
 using namespace std;
 
 bool getThree(vector<Majan>& a, int remain){
-//    for(int i = 0; i < a.size(); i++){
-//        a[i].print();
-//    }
-//    cout << endl;
+    //    for(int i = 0; i < a.size(); i++){
+    //        a[i].print();
+    //    }
+    //    cout << endl;
     if(remain == 0 && a.empty()){
         return true;
     }else if(remain == 2 && a.size() == 2){
@@ -75,13 +72,17 @@ bool getThree(vector<Majan>& a, int remain){
     return false;
 };
 
-void fillPossMajan(vector<Majan>& a){
+Deck::Deck(SDL_Renderer* rRTemp) {
+    rR = rRTemp;
+}
+
+void fillPossMajan(vector<Majan>& a, SDL_Renderer* rR){
     for(int i = 2; i < 6; i++){
         if(i == 2){
             int repeat = 1;
             while(repeat != 0){
                 for (int j = 1; j < 8; j++){
-                    Majan temp = {i, j};
+                    Majan temp = Majan(i , j, rR);
                     a.push_back(temp);
                 }
                 repeat--;
@@ -90,7 +91,7 @@ void fillPossMajan(vector<Majan>& a){
             int repeat = 1;
             while(repeat != 0){
                 for (int j = 1; j < 10; j++){
-                    Majan temp = {i, j};
+                    Majan temp = Majan(i , j, rR);
                     a.push_back(temp);
                 }
                 repeat--;
@@ -102,30 +103,30 @@ void fillPossMajan(vector<Majan>& a){
 bool Deck::checkListen(){
     listenOption.clear();
     vector<Majan>totals;
-    fillPossMajan(totals);
-
-    Deck temp;
+    fillPossMajan(totals, rR);
+    
+    Deck temp = Deck(rR);
     for(int i = 0; i < deck.size(); i++){
         temp.deck.push_back(deck[i]);
     }
-
+    
     int pos = 0;
     Majan m{}, n{};
     for(int i = 0; i < temp.deck.size(); i++){
         Option o = Option(temp.deck[i]);
-        m = {temp.deck[i].type, temp.deck[i].num};
-//        m.print();
+        m = Majan(temp.deck[i].type, temp.deck[i].num, rR);
+        //        m.print();
         temp.deck.erase(temp.deck.begin() + i, temp.deck.begin() + i + 1);
-
+        
         for(int j = 0; j < 34; j++){
             temp.deck.push_back(totals[j]);
             temp.sort();
-//            for(int l = 0; l < temp.deck.size(); l++){
-//                temp.deck[l].print();
-//            }
-//            cout << endl;
+            //            for(int l = 0; l < temp.deck.size(); l++){
+            //                temp.deck[l].print();
+            //            }
+            //            cout << endl;
             if(temp.checkHoo()){
-//                cout << "上面這副有聽" << endl;
+                //                cout << "上面這副有聽" << endl;
                 o.addOption(totals[j]);
             }
             pos = temp.searchMajan(&totals[j]);
@@ -195,75 +196,76 @@ void Deck::pon(int pos, Majan m){
     }
 }
 
-bool Deck::checkEat(vector<Majan>& eat, Majan* m){
+bool Deck::checkEat(vector<int>& eat, Majan* m){
+    eat.clear();
     bool canEat = false;
     if(m->type >= 3){
         if(m->num == 1){
-            Majan n = {m->type, m->num + 1};
-            Majan o = {m->type, m->num + 2};
+            Majan n = Majan(m->type, m->num + 1, rR);
+            Majan o = Majan(m->type, m->num + 2, rR);
             if(this->searchMajan(&n) != -1 && this->searchMajan(&o) != -1 ){
-                eat.push_back(n);
-                eat.push_back(o);
+                eat.push_back(this->searchMajan(&n));
+                eat.push_back(this->searchMajan(&o));
                 canEat = true;
             }
         }else if(m->num == 2){
-            Majan n = {m->type, m->num - 1};
-            Majan o = {m->type, m->num + 1};
+            Majan n = Majan(m->type, m->num - 1, rR);
+            Majan o = Majan(m->type, m->num + 1, rR);
             if(this->searchMajan(&n) != -1 && this->searchMajan(&o) != -1 ){
-                eat.push_back(n);
-                eat.push_back(o);
+                eat.push_back(this->searchMajan(&n));
+                eat.push_back(this->searchMajan(&o));
                 canEat = true;
             }
-            n = {m->type, m->num + 1};
-            o = {m->type, m->num + 2};
+            n = Majan(m->type, m->num + 1, rR);
+            o = Majan(m->type, m->num + 2, rR);
             if(this->searchMajan(&n) != -1 && this->searchMajan(&o) != -1 ){
-                eat.push_back(n);
-                eat.push_back(o);
+                eat.push_back(this->searchMajan(&n));
+                eat.push_back(this->searchMajan(&o));
                 canEat = true;
             }
         }else if(m->num >= 3 && m->num <= 7){
-            Majan n = {m->type, m->num - 1};
-            Majan o = {m->type, m->num - 2};
+            Majan n = Majan(m->type, m->num - 1, rR);
+            Majan o = Majan(m->type, m->num - 2, rR);
             if(this->searchMajan(&n) != -1 && this->searchMajan(&o) != -1 ){
-                eat.push_back(o);
-                eat.push_back(n);
+                eat.push_back(this->searchMajan(&o));
+                eat.push_back(this->searchMajan(&n));
                 canEat = true;
             }
-            n = {m->type, m->num - 1};
-            o = {m->type, m->num + 1};
+            n = Majan(m->type, m->num - 1 ,rR);
+            o = Majan(m->type, m->num + 1, rR);
             if(this->searchMajan(&n) != -1 && this->searchMajan(&o) != -1 ){
-                eat.push_back(n);
-                eat.push_back(o);
+                eat.push_back(this->searchMajan(&n));
+                eat.push_back(this->searchMajan(&o));
                 canEat = true;
             }
-            n = {m->type, m->num + 1};
-            o = {m->type, m->num + 2};
+            n = Majan(m->type, m->num + 1, rR);
+            o = Majan(m->type, m->num + 2, rR);
             if(this->searchMajan(&n) != -1 && this->searchMajan(&o) != -1 ){
-                eat.push_back(n);
-                eat.push_back(o);
+                eat.push_back(this->searchMajan(&n));
+                eat.push_back(this->searchMajan(&o));
                 canEat = true;
             }
         }else if(m->num == 8){
-            Majan n = {m->type, m->num - 1};
-            Majan o = {m->type, m->num - 2};
+            Majan n = Majan(m->type, m->num - 1, rR);
+            Majan o = Majan(m->type, m->num - 2, rR);
             if(this->searchMajan(&n) != -1 && this->searchMajan(&o) != -1 ){
-                eat.push_back(o);
-                eat.push_back(n);
+                eat.push_back(this->searchMajan(&o));
+                eat.push_back(this->searchMajan(&n));
                 canEat = true;
             }
-            n = {m->type, m->num - 1};
-            o = {m->type, m->num + 1};
+            n = Majan(m->type, m->num - 1, rR);
+            o = Majan(m->type, m->num + 1, rR);
             if(this->searchMajan(&n) != -1 && this->searchMajan(&o) != -1 ){
-                eat.push_back(n);
-                eat.push_back(o);
+                eat.push_back(this->searchMajan(&n));
+                eat.push_back(this->searchMajan(&o));
                 canEat = true;
             }
         }else if(m->num == 9){
-            Majan n = {m->type, m->num - 1};
-            Majan o = {m->type, m->num - 2};
+            Majan n = Majan(m->type, m->num - 1, rR);
+            Majan o = Majan(m->type, m->num - 2, rR);
             if(this->searchMajan(&n) != -1 && this->searchMajan(&o) != -1 ){
-                eat.push_back(o);
-                eat.push_back(n);
+                eat.push_back(this->searchMajan(&o));
+                eat.push_back(this->searchMajan(&n));
                 canEat = true;
             }
         }
@@ -278,7 +280,7 @@ int Deck::checkGan(Majan* a){
     int pos = this->searchMajan(a);
     if(pos != -1 && pos + 2 < deck.size()){
         if(this->deck[pos + 1].type == a->type && this->deck[pos + 1].num == a->num
-            && this->deck[pos + 2].type == a->type && this->deck[pos + 2].num == a->num){
+           && this->deck[pos + 2].type == a->type && this->deck[pos + 2].num == a->num){
             canGan = true;
         }
     }
@@ -287,6 +289,21 @@ int Deck::checkGan(Majan* a){
     }else{
         return -1;
     }
+}
+
+bool Deck::samePonMajan(){
+    vector<Majan>temp;
+    int pos = (int)deck.size() - 1;
+    temp.push_back(deck[pos]);
+    for(int i = 0; i < deckOut.size(); i++){
+        if(deckOut[i] == deck[pos] && deckOut[i + 1] == deck[pos] && deckOut[i + 2] == deck[pos]){
+            deck.erase(deck.end() - 1, deck.end());
+            deckOut.insert(deck.begin() + i, temp.begin(), temp.end());
+            temp.clear();
+            return true;
+        }
+    }
+    return false;
 }
 
 int Deck::checkPon(Majan* a){
@@ -336,7 +353,7 @@ bool Deck::checkHoo(){
             tia.push_back(this->deck[i]);
         }
     }
-
+    
     //確認數量
     if(word.size() % 3 == 1 || wan.size() % 3 == 1 || ton.size() % 3 == 1 || tia.size() % 3 == 1){
         return false;
@@ -348,10 +365,10 @@ bool Deck::checkHoo(){
         if(wordRemain + wanRemain + tonRemain + tiaRemain > 2){
             return false;
         }else{
-//            cout << getThree(word, wordRemain) << getThree(wan, wanRemain) <<
-//            getThree(ton, tonRemain) << getThree(tia, tiaRemain);
+            //            cout << getThree(word, wordRemain) << getThree(wan, wanRemain) <<
+            //            getThree(ton, tonRemain) << getThree(tia, tiaRemain);
             bool win = getThree(word, wordRemain) && getThree(wan, wanRemain)
-                       && getThree(ton, tonRemain) && getThree(tia, tiaRemain);
+            && getThree(ton, tonRemain) && getThree(tia, tiaRemain);
             word.clear();
             wan.clear();
             tia.clear();
@@ -374,23 +391,19 @@ int Deck::searchMajan(Majan* m){
 
 void Deck::addMajan(int& pos, int num, Deck* totals){
     vector<Majan> temp;
-    Majan m = {0, 0};
+    Majan m = Majan(0, 0, rR);
     for(int i = 0; i < num; i++){
-        this->deck.push_back(totals->deck[pos + i]);
+        deck.push_back(totals->deck[pos + i]);
         temp.push_back(m);
     }
     totals->deck.erase(totals->deck.begin() + pos, totals->deck.begin() + pos + num);
     totals->deck.insert(totals->deck.begin() + pos, temp.begin(), temp.end());
-    pos += num;
-    if(pos > 143){
-        pos -= 144;
-    }
     temp.clear();
 }
 
 void Deck::addMajanBack(int& backPos, int num, Deck* totals) {
     vector<Majan> temp;
-    Majan m = {0, 0};
+    Majan m = Majan(0, 0, rR);
     bool CrossZero = false;
     int end = backPos - num;
     if(end < 0){
@@ -426,7 +439,7 @@ void Deck::addMajanBack(int& backPos, int num, Deck* totals) {
             totals->deck.erase(totals->deck.begin() + end + 1, totals->deck.begin() + backPos + 1);
             totals->deck.insert(totals->deck.begin() + end + 1, temp.begin(), temp.end());
         }
-
+        
     }
     backPos = end;
     temp.clear();
@@ -468,15 +481,13 @@ void Deck::print(){
 void Deck::sort(){
     std::sort(this->deck.begin(), this->deck.end(),
               [](const Majan a,const Majan b){
-                    bool right = false;
-                      if(b.type > a.type){
+                  bool right = false;
+                  if(b.type > a.type){
+                      right = true;
+                  }else if(b.type == a.type){
+                      if(b.num > a.num){
                           right = true;
-                      }else if(b.type == a.type){
-                          if(b.num > a.num){
-                              right = true;
-                          }
                       }
-                      return right;});
+                  }
+                  return right;});
 }
-
-
