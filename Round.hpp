@@ -77,6 +77,12 @@ public:
     vector<int>eatIndex;
     int moveEatIndex;
     int moveListenIndex;
+
+    //
+    int taiList[4];
+    bool taiMeet[18];
+    int countTai(int winner, int loser, bool selfTouch);
+    void drawTai(SDL_Renderer* rR, int x, int y, int h, int w, int finalTai);
 };
 
 

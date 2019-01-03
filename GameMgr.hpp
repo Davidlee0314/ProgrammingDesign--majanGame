@@ -26,7 +26,8 @@ enum gStats
     MENU,
     DICE,
     INITROUND,
-    PLAYER
+    PLAYER,
+    TAI
 };
 
 class GameMgr
@@ -63,7 +64,7 @@ private:
     //for Dice
     int changeDice;
     int diceNum;
-    bool changePlayerIndex;
+    int taiNum;
 
 
     

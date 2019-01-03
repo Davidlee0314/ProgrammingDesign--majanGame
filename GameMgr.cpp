@@ -28,7 +28,6 @@ GameMgr::GameMgr()
     this->quitGame = false;
     changeDice = -1;
     frameCounter = 0;
-    changePlayerIndex = false;
     
     // SDL
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO);
@@ -187,12 +186,14 @@ GameMgr::Update()
         case PLAYER:
         {
             for(int i = 0; i < 4; i ++){
-                cout << "------------Player " << i + 1 << endl;
-                aRound->playerList[i]->ownedDeck->print();
                 cout << endl;
+                cout << "============Player " << i + 1 << " =================" << endl;
+                aRound->playerList[i]->ownedDeck->print();
+                cout << endl << " ------------left---------------" << endl;
                 for(int j = 0; j < aRound->playerList[i]->left.size(); j++){
                     aRound->playerList[i]->left[j].print();
                 }
+                cout << endl << "=====================================" << endl;
                 cout << endl;
             }
             ctrl = aCondition->updateCondtion(mouseX, mouseY, mouseLeftTrigger);
@@ -205,6 +206,9 @@ GameMgr::Update()
             }
 
             if(aRound->playerNow == 0){
+                if(aRound->playerList[0]->listen){
+                    SDL_Delay(1000);
+                }
                 aRound->moveIndex = aRound->updatePlayer(mouseX, mouseY, mouseLeftTrigger);
                 if(aRound->giveOutMajan){
                     aRound->giveOutMajan = false;
@@ -235,7 +239,28 @@ GameMgr::Update()
                     }
                 }
             }
-//            if()
+            if(aRound->haveWinner()){
+                NowStat = TAI;
+            }
+            if(aRound->failToFindWinner){
+                cout << "流局" << endl;
+            }
+            break;
+        }
+        case TAI:
+        {
+            int winner = 0;
+            for(int i = 0; i < 4; i++){
+                if(aRound->playerList[i]->win){
+                    winner = i;
+                }
+            }
+            cout << " 算台 " << winner << endl;
+            bool selfTouch = false;
+            if(aRound->playerNow == winner){
+                selfTouch = true;
+            }
+            taiNum = aRound->countTai(winner, aRound->playerNow, selfTouch);
             break;
         }
         default:
@@ -282,6 +307,9 @@ GameMgr::Draw()
         gmTexture->Draw(rR, 0, 0, 720, 1280, 0, 0, 3);
         aCondition->drawCondition(rR);
         aRound->drawRound();
+    }
+    else if(NowStat == TAI){
+        aRound->drawTai(rR, 0, 0, 720, 1280, taiNum);
     }
 }
 
