@@ -65,6 +65,7 @@ private:
     int changeDice;
     int diceNum;
     int taiNum;
+    int winner;
 
 
     

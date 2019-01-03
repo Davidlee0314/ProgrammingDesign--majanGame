@@ -58,7 +58,8 @@ public:
     int updatePlayer(int x, int y, bool mouseL);
     void updatePlayerAction(int x, int y, bool mouseL);
     void updateAI();
-    void updateAIAction();
+    int updateAIPonHu();
+    void updateAIAction(int);
 
     void drawRound();
     SDL_Renderer* rR;

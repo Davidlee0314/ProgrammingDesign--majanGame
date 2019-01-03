@@ -298,7 +298,7 @@ bool Deck::samePonMajan(){
     for(int i = 0; i < deckOut.size(); i++){
         if(deckOut[i] == deck[pos] && deckOut[i + 1] == deck[pos] && deckOut[i + 2] == deck[pos]){
             deck.erase(deck.end() - 1, deck.end());
-            deckOut.insert(deck.begin() + i, temp.begin(), temp.end());
+            deckOut.insert(deckOut.begin() + i, temp.begin(), temp.end());
             temp.clear();
             return true;
         }

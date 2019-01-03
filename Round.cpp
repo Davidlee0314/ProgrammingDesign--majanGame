@@ -238,7 +238,7 @@ bool Round::haveWinner(){
     for(int i = 0; i < 4; i++){
         if(playerList[i]->win){
             haveWinner = true;
-        };
+        }
     }
     return haveWinner;
 }
@@ -368,13 +368,15 @@ int Round::updatePlayer(int x, int y, bool mouseL) {
                         playerList[playerNow]->ownedDeck->addMajanBack(backPos, 1, totals);
                     }
                 }
-            }else if(justGan){
-                justGan = false;
-                playerList[playerNow]->ownedDeck->addMajanBack(backPos, 1, totals);
-                while(playerList[playerNow]->ownedDeck->deck.back().type == 1){
-                    playerList[playerNow]->ownedDeck->putDeckOut(
-                            (int)playerList[playerNow]->ownedDeck->deck.size() - 1, 1);
+            }else{
+                if(justGan){
+                    justGan = false;
                     playerList[playerNow]->ownedDeck->addMajanBack(backPos, 1, totals);
+                    while(playerList[playerNow]->ownedDeck->deck.back().type == 1){
+                        playerList[playerNow]->ownedDeck->putDeckOut(
+                                (int)playerList[playerNow]->ownedDeck->deck.size() - 1, 1);
+                        playerList[playerNow]->ownedDeck->addMajanBack(backPos, 1, totals);
+                    }
                 }
             }
             takeMajan = true;
@@ -556,18 +558,16 @@ void Round::updatePlayerAction(int x, int y, bool mouseL){
 
     if(!haveWinner() && !failToFindWinner){
         // 可胡
-        bool hoo = false;
-
         playerList[0]->ownedDeck->deck.push_back(*m);
         playerList[0]->ownedDeck->sort();
         int pos = playerList[0]->ownedDeck->searchMajan(m);
 
         if(playerList[0]->ownedDeck->checkHoo()){
+            cout << "player 1 win" << endl;
             action.push_back(5);
             if(!choose.empty()){
                 if(choose[0] == 5){
                     playerList[0]->win = true;
-                    hoo = true;
                 }
             }
         }else{
@@ -577,7 +577,7 @@ void Round::updatePlayerAction(int x, int y, bool mouseL){
         }
 
 
-        if(!hoo){
+        if(!playerList[0]->listen){
             // 可碰
             int pon = 0;
             if(!playerList[0]->listen){
@@ -598,7 +598,7 @@ void Round::updatePlayerAction(int x, int y, bool mouseL){
 
             // 可槓
             int gan = 0;
-            if(!playerList[0]->listen){
+            if(!playerList[0]->listen && playerNow != 3){
                 pos = playerList[0]->ownedDeck->checkGan(m);
                 if (pos != -1) {
                     action.push_back(3);
@@ -610,6 +610,7 @@ void Round::updatePlayerAction(int x, int y, bool mouseL){
                             playerNow = 0;
                             justAction = true;
                             justGan = true;
+                            takeMajan = false;
                         }
                     }
                 }
@@ -686,6 +687,9 @@ void Round::updateAI() {
                     playerList[playerNow]->refresh();
                 }
                 Majan* n = playerList[playerNow]->throwAway();
+                cout << "要丟的麻將: ";
+                n->print();
+                cout << endl;
                 giveOutIndex = playerList[playerNow]->ownedDeck->searchMajan(n);
             }
         }else{
@@ -712,7 +716,7 @@ void Round::updateAI() {
             playerList[playerNow]->left[j].print();
         }
         cout << "問題 2: player" << playerNow + 1 << " -- 聽了: " << playerList[playerNow]->listen<< endl;
-        cout << "giveOutIndex---" << giveOutIndex << endl;
+        cout << "giveOutIndex = " << giveOutIndex << endl;
         cout << "***************************" << endl;
         cout << endl;
 
@@ -740,6 +744,9 @@ void Round::updateAI() {
                 m->print();
             }
             playerList[playerNow]->ownedDeck->sort();
+            cout << "<<問題可能點>> sorting" << endl;
+            playerList[playerNow]->ownedDeck->print();
+            cout << endl;
         }
 
         if(totals->deck[posPre16()].type == 0){
@@ -748,13 +755,9 @@ void Round::updateAI() {
     }
 }
 
-void Round::updateAIAction(){
-    m->print();
-
+int Round::updateAIPonHu() {
     if(!haveWinner() && !failToFindWinner){
-
         // 可胡
-        bool hoo = false;
         for(int i = 0; i < 4; i++){
             if(i != playerNow && i != 0){
                 playerList[i]->ownedDeck->deck.push_back(*m);
@@ -764,8 +767,8 @@ void Round::updateAIAction(){
                 if(playerList[i]->ownedDeck->checkHoo()){
                     cout << i + 1<< " win" << endl;
                     playerList[i]->win = true;
-                    hoo = true;
                     justAction = true;
+                    return 2;
                 }else{
                     playerList[i]->ownedDeck->deck.erase(playerList[i]->ownedDeck->deck.begin() + pos,
                                                          playerList[i]->ownedDeck->deck.begin() + pos + 1);
@@ -773,42 +776,47 @@ void Round::updateAIAction(){
             }
         }
 
-        if(!hoo){
-            // 可碰
-            int pon = 0;
-            for(int i = 0; i < 4; i++){
-                if(i != playerNow && i != 0 && !playerList[i]->listen){
-                    int pos = 0;
-                    pos = playerList[i]->ownedDeck->checkPon(m);
-                    if(pos != -1){
-                        playerList[i]->ownedDeck->pon(pos, *m);
-                        haidi->deck.erase(haidi->deck.end() - 1, haidi->deck.end());
-                        playerNow = i;
-                        justAction = true;
-                        playerList[playerNow]->firstTime();
-                        pon = 1;
-                    }
-                }
-            }
-
-            //檢查下家可吃
-            if(pon == 0){
-                vector<int> eatStore;
-                int next = playerNext();
-                playerList[next]->ownedDeck->checkEat(eatStore, m);
-                if(next != 0 && !eatStore.empty() && !playerList[next]->listen){
-                    playerList[next]->ownedDeck->eat(*m,
-                            playerList[next]->ownedDeck->deck[eatStore[0]],
-                            playerList[next]->ownedDeck->deck[eatStore[1]]);
+        // 可碰
+        for(int i = 0; i < 4; i++){
+            if(i != playerNow && i != 0 && !playerList[i]->listen){
+                int pos = 0;
+                pos = playerList[i]->ownedDeck->checkPon(m);
+                if(pos != -1){
+                    playerList[i]->ownedDeck->pon(pos, *m);
                     haidi->deck.erase(haidi->deck.end() - 1, haidi->deck.end());
-                    playerNow = next;
+                    playerNow = i;
                     justAction = true;
                     playerList[playerNow]->firstTime();
+                    return 1;
                 }
-                eatStore.clear();
             }
         }
     }
+    return 0;
+}
+
+void Round::updateAIAction(int pon){
+
+    if(!haveWinner() && !failToFindWinner){
+
+        //檢查下家可吃
+        if(pon == 0){
+            vector<int> eatStore;
+            int next = playerNext();
+            playerList[next]->ownedDeck->checkEat(eatStore, m);
+            if(next != 0 && !eatStore.empty() && !playerList[next]->listen){
+                playerList[next]->ownedDeck->eat(*m,
+                        playerList[next]->ownedDeck->deck[eatStore[0]],
+                        playerList[next]->ownedDeck->deck[eatStore[1]]);
+                haidi->deck.erase(haidi->deck.end() - 1, haidi->deck.end());
+                playerNow = next;
+                justAction = true;
+                playerList[playerNow]->firstTime();
+            }
+            eatStore.clear();
+        }
+    }
+
 }
 
 void Round::drawRound() {
@@ -904,11 +912,11 @@ void Round::drawRound() {
         if(playerNow == 0){
             drawRoundRotate(605, 450, 70, 70, 90);
         }else if(playerNow == 1){
-            drawRoundRotate(1110, 360, 70, 70, 0);
+            drawRoundRotate(1110, 325, 70, 70, 0);
         }else if(playerNow == 2){
             drawRoundRotate(605, 70, 70, 70, 270);
         }else{
-            drawRoundRotate(100, 360, 70, 70, 180);
+            drawRoundRotate(100, 325, 70, 70, 180);
         }
     }
 }
@@ -1677,29 +1685,35 @@ int Round::countTai(int winner, int loser, bool selfTouch)
             if(i != winner)
                 taiList[i] -= taiCount;
     }
-    cout << "有在算台" << endl;
-    cout << "台數: " << taiCount << endl;
+    cout << endl << "台數: " << taiCount << endl;
     return taiCount;
 }
 
 void Round::drawTai(SDL_Renderer* rR, int x, int y, int h, int w, int finalTai)
 {
-    tRound->Draw(rR, 0, 0, h, w, 169, 0, 22);   // blackBoard
+    tRound->Draw(rR, 0, 0, h, w, 0, 0, 22);   // blackBoard
     int cnt = 0;
     for(int i = 0; i < 18; i++){
         if(taiMeet[i]){
-            tRound->Draw(rR, 0, 0, 80, 200, 300, 30 + 80*cnt, 25+i);    //taiMeet
+            if(i % 3 == 1){
+                tRound->Draw(rR, 0, 0, 80, 200, 50, 400 + 80 * (int)floor(i / 3), 25 + i);
+            }else if(i % 3 == 2){
+                tRound->Draw(rR, 0, 0, 80, 200, 250, 400 + 80 * (int)floor(i / 3), 25 + i);
+            }else{
+                tRound->Draw(rR, 0, 0, 80, 200, 450, 400 + 80 * (int)floor(i / 3), 25 + i);
+            }
+               //taiMeet
             cnt++;
         }
     }
 
     if (finalTai < 10){
 //        string num = to_string(finalTai);
-        tRound->Draw(rR, 0, 0, 80, 80, 1000, 250, 12 + finalTai);    //taiNum
+        tRound->Draw(rR, 0, 0, 100, 100, 1000, 200, 12 + finalTai);    //taiNum
     } else{
 //        string num1 = to_string(finalTai)[0];
 //        string num2 = to_string(finalTai)[1];
-        tRound->Draw(rR, 0, 0, 80, 80, 1000, 250, 12 + finalTai / 10);    //taiNum
-        tRound->Draw(rR, 0, 0, 80, 80, 1080, 250, 12 + finalTai % 10);    //taiNum
+        tRound->Draw(rR, 0, 0, 100, 100, 1000, 200, 12 + finalTai / 10);    //taiNum
+        tRound->Draw(rR, 0, 0, 100, 100, 1000, 200, 12 + finalTai % 10);    //taiNum
     }
 }

@@ -95,7 +95,6 @@ GameMgr::mainLoop()
 void
 GameMgr::Update()
 {
-    cout << NowStat << endl;
     switch (NowStat)
     {
         case INIT:
@@ -185,17 +184,23 @@ GameMgr::Update()
         }
         case PLAYER:
         {
-            for(int i = 0; i < 4; i ++){
-                cout << endl;
-                cout << "============Player " << i + 1 << " =================" << endl;
-                aRound->playerList[i]->ownedDeck->print();
-                cout << endl << " ------------left---------------" << endl;
-                for(int j = 0; j < aRound->playerList[i]->left.size(); j++){
-                    aRound->playerList[i]->left[j].print();
+            if(aRound->playerNow != 0){
+                cout << "####################################" << endl;
+                aRound->totals->print();
+                cout << "####################################" << endl;
+                for(int i = 0; i < 4; i ++){
+                    cout << endl;
+                    cout << "============Player " << i + 1 << " =================" << endl;
+                    aRound->playerList[i]->ownedDeck->print();
+                    cout << endl << " ------------left---------------" << endl;
+                    for(int j = 0; j < aRound->playerList[i]->left.size(); j++){
+                        aRound->playerList[i]->left[j].print();
+                    }
+                    cout << endl << "=====================================" << endl;
+                    cout << endl;
                 }
-                cout << endl << "=====================================" << endl;
-                cout << endl;
             }
+
             ctrl = aCondition->updateCondtion(mouseX, mouseY, mouseLeftTrigger);
             switch (ctrl) {
                 case 1:
@@ -205,41 +210,52 @@ GameMgr::Update()
                     break;
             }
 
-            if(aRound->playerNow == 0){
-                if(aRound->playerList[0]->listen){
-                    SDL_Delay(1000);
-                }
-                aRound->moveIndex = aRound->updatePlayer(mouseX, mouseY, mouseLeftTrigger);
-                if(aRound->giveOutMajan){
-                    aRound->giveOutMajan = false;
-                    aRound->updateAIAction();
-                    if(!aRound->justAction && !aRound->justGan){
-                        aRound->playerNow += 1;
-                        if(aRound->playerNow == 4){
-                            aRound->playerNow = 0;
+            if(!aRound->haveWinner()){
+                if(aRound->playerNow == 0){
+                    if(aRound->playerList[0]->listen){
+                        SDL_Delay(1000);
+                    }
+                    aRound->moveIndex = aRound->updatePlayer(mouseX, mouseY, mouseLeftTrigger);
+                    if(aRound->giveOutMajan){
+                        aRound->giveOutMajan = false;
+                        int pon = aRound->updateAIPonHu();
+                        if(pon == 0){
+                            aRound->updateAIAction(pon);
+                        }else if(pon == 2){
+                            SDL_Delay(1000);
+                        }
+                        if(!aRound->haveWinner() && !aRound->justAction && !aRound->justGan){
+                            aRound->playerNow += 1;
+                            if(aRound->playerNow == 4){
+                                aRound->playerNow = 0;
+                            }
+                        }
+                    }
+                }else{
+                    if((aRound->action.empty() || !aRound->choose.empty()) && aRound->finishEat && aRound->finishListen){
+                        SDL_Delay(1000);
+                        aRound->updateAI();
+                    }
+                    int pon = aRound->updateAIPonHu();
+                    if(pon == 0){
+                        aRound->updatePlayerAction(mouseX, mouseY, mouseLeftTrigger);
+                    }
+                    if(!aRound->haveWinner() && (aRound->action.empty() || !aRound->choose.empty()) && aRound->finishEat && aRound->finishListen){
+                        if(!aRound->justAction) {
+                            aRound->updateAIAction(pon);
+                        }
+                        if(!aRound->justAction){
+                            aRound->playerNow += 1;
+                            if(aRound->playerNow == 4){
+                                aRound->playerNow = 0;
+                                aRound->takeMajan = false;
+                            }
                         }
                     }
                 }
             }else{
-                if((aRound->action.empty() || !aRound->choose.empty()) && aRound->finishEat && aRound->finishListen){
-                    SDL_Delay(1000);
-                    aRound->updateAI();
-                }
-                aRound->updatePlayerAction(mouseX, mouseY, mouseLeftTrigger);
-                if((aRound->action.empty() || !aRound->choose.empty()) && aRound->finishEat && aRound->finishListen){
-                    if(!aRound->justAction) {
-                        aRound->updateAIAction();
-                    }
-                    if(!aRound->justAction){
-                        aRound->playerNow += 1;
-                        if(aRound->playerNow == 4){
-                            aRound->playerNow = 0;
-                            aRound->takeMajan = false;
-                        }
-                    }
-                }
-            }
-            if(aRound->haveWinner()){
+                taiNum = -1;
+                winner = -1;
                 NowStat = TAI;
             }
             if(aRound->failToFindWinner){
@@ -249,13 +265,12 @@ GameMgr::Update()
         }
         case TAI:
         {
-            int winner = 0;
+
             for(int i = 0; i < 4; i++){
                 if(aRound->playerList[i]->win){
                     winner = i;
                 }
             }
-            cout << " 算台 " << winner << endl;
             bool selfTouch = false;
             if(aRound->playerNow == winner){
                 selfTouch = true;
@@ -309,7 +324,17 @@ GameMgr::Draw()
         aRound->drawRound();
     }
     else if(NowStat == TAI){
-        aRound->drawTai(rR, 0, 0, 720, 1280, taiNum);
+        if(taiNum != -1){
+            int totals = (int)aRound->playerList[winner]->ownedDeck->deck.size();
+            aRound->drawTai(rR, 0, 0, 720, 1280, taiNum);
+            for(int i = 0; i < aRound->playerList[winner]->ownedDeck->deckOut.size(); i++){
+                aRound->playerList[winner]->ownedDeck->deckOut[i].drawMajan(rR, 50 + i * 55, 200, 72, 50);
+            }
+            for(int i = 0; i < totals; i++){
+                aRound->playerList[winner]->ownedDeck->deck[i].drawMajan(rR, 50 + i * 55, 300, 72, 50);
+            }
+            aRound->tRound->Draw(rR, 0, 0, 100, 100, 400, 50, 12 + winner + 1);
+        }
     }
 }
 
