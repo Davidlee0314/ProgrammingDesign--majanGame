@@ -503,6 +503,46 @@ int Round::updatePlayer(int x, int y, bool mouseL) {
     }
 }
 
+bool Round::updatePlayerHu(int x, int y, bool mouseL) {
+    choose.clear();
+    action.clear();
+
+    if(y > 550 && y < 600){
+        if(x > 1050 && x < 1100 && mouseL){
+            choose.push_back(5);
+        }else if(x > 800 && x < 850 && mouseL){
+            choose.push_back(6);
+        }
+    }
+
+    if(!haveWinner() && !failToFindWinner){
+        playerList[0]->ownedDeck->deck.push_back(*m);
+        playerList[0]->ownedDeck->sort();
+        int posHu = playerList[0]->ownedDeck->searchMajan(m);
+
+        if(playerList[0]->ownedDeck->checkHoo()){
+            cout << "player 1 win" << endl;
+            action.push_back(5);
+            if(!choose.empty()){
+                if(choose[0] == 5){
+                    playerList[0]->win = true;
+                }
+            }else{
+                playerList[0]->ownedDeck->deck.erase(
+                    playerList[0]->ownedDeck->deck.begin() + posHu,
+                    playerList[0]->ownedDeck->deck.begin() + posHu + 1);
+            }
+            return true;
+        }else{
+            cout << "清麻將" << posHu << endl;
+            playerList[0]->ownedDeck->deck.erase(
+                    playerList[0]->ownedDeck->deck.begin() + posHu,
+                    playerList[0]->ownedDeck->deck.begin() + posHu + 1);
+            return false;
+        }
+    }
+}
+
 void Round::updatePlayerAction(int x, int y, bool mouseL){
     choose.clear();
     action.clear();
@@ -516,8 +556,6 @@ void Round::updatePlayerAction(int x, int y, bool mouseL){
             choose.push_back(3);
         }else if(x > 1000 && x < 1050 && mouseL){
             choose.push_back(4);
-        }else if(x > 1050 && x < 1100 && mouseL){
-            choose.push_back(5);
         }else if(x > 800 && x < 850 && mouseL){
             choose.push_back(6);
         }
@@ -559,37 +597,18 @@ void Round::updatePlayerAction(int x, int y, bool mouseL){
     }
 
     if(!haveWinner() && !failToFindWinner){
-        // 可胡
-        playerList[0]->ownedDeck->deck.push_back(*m);
-        playerList[0]->ownedDeck->sort();
-        int pos = playerList[0]->ownedDeck->searchMajan(m);
-
-        if(playerList[0]->ownedDeck->checkHoo()){
-            cout << "player 1 win" << endl;
-            action.push_back(5);
-            if(!choose.empty()){
-                if(choose[0] == 5){
-                    playerList[0]->win = true;
-                }
-            }
-        }else{
-            playerList[0]->ownedDeck->deck.erase(
-                    playerList[0]->ownedDeck->deck.begin() + pos,
-                    playerList[0]->ownedDeck->deck.begin() + pos + 1);
-        }
-
 
         if(!playerList[0]->listen){
             // 可碰
             int pon = 0;
             if(!playerList[0]->listen){
-                pos = playerList[0]->ownedDeck->checkPon(m);
-                if(pos != -1){
+                int posPon = playerList[0]->ownedDeck->checkPon(m);
+                if(posPon != -1){
                     action.push_back(2);
                     if(!choose.empty()){
                         if(choose[0] == 2){
                             pon = 1;
-                            playerList[0]->ownedDeck->pon(pos, *m);
+                            playerList[0]->ownedDeck->pon(posPon, *m);
                             haidi->deck.erase(haidi->deck.end() - 1, haidi->deck.end());
                             playerNow = 0;
                             justAction = true;
@@ -601,13 +620,13 @@ void Round::updatePlayerAction(int x, int y, bool mouseL){
             // 可槓
             int gan = 0;
             if(!playerList[0]->listen && playerNow != 3){
-                pos = playerList[0]->ownedDeck->checkGan(m);
-                if (pos != -1) {
+                int posGan = playerList[0]->ownedDeck->checkGan(m);
+                if (posGan != -1) {
                     action.push_back(3);
                     if(!choose.empty()){
                         if (choose[0] == 3) {
                             gan = 1;
-                            playerList[0]->ownedDeck->gan(pos, *m);
+                            playerList[0]->ownedDeck->gan(posGan, *m);
                             haidi->deck.erase(haidi->deck.end() - 1, haidi->deck.end());
                             playerNow = 0;
                             justAction = true;
@@ -649,6 +668,7 @@ void Round::updateAI() {
 
     if(!haveWinner() && !failToFindWinner){
         if(playerList[playerNow]->ownedDeck->deck.size() != 17 && !justAction) {
+            cout << "抓牌： " << pos << endl;
             playerList[playerNow]->ownedDeck->addMajan(pos, 1, totals);
             pos += 1;
             if(pos > 143){

@@ -56,6 +56,7 @@ public:
     void updateInitRound(int);
     int updateFlower();
     int updatePlayer(int x, int y, bool mouseL);
+    bool updatePlayerHu(int x, int y, bool mouseL);
     void updatePlayerAction(int x, int y, bool mouseL);
     void updateAI();
     int updateAIPonHu();

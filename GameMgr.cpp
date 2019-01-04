@@ -236,19 +236,23 @@ GameMgr::Update()
                         SDL_Delay(1000);
                         aRound->updateAI();
                     }
-                    int pon = aRound->updateAIPonHu();
-                    if(pon == 0){
-                        aRound->updatePlayerAction(mouseX, mouseY, mouseLeftTrigger);
-                    }
-                    if(!aRound->haveWinner() && (aRound->action.empty() || !aRound->choose.empty()) && aRound->finishEat && aRound->finishListen){
-                        if(!aRound->justAction) {
-                            aRound->updateAIAction(pon);
+                    bool playerHu = aRound->updatePlayerHu(mouseX, mouseY, mouseLeftTrigger);
+                    if(!playerHu){
+                        int pon = aRound->updateAIPonHu();
+                        if(pon == 0){
+                            aRound->updatePlayerAction(mouseX, mouseY, mouseLeftTrigger);
                         }
-                        if(!aRound->justAction){
-                            aRound->playerNow += 1;
-                            if(aRound->playerNow == 4){
-                                aRound->playerNow = 0;
-                                aRound->takeMajan = false;
+
+                        if(!aRound->haveWinner() && (aRound->action.empty() || !aRound->choose.empty()) && aRound->finishEat && aRound->finishListen){
+                            if(!aRound->justAction) {
+                                aRound->updateAIAction(pon);
+                            }
+                            if(!aRound->justAction){
+                                aRound->playerNow += 1;
+                                if(aRound->playerNow == 4){
+                                    aRound->playerNow = 0;
+                                    aRound->takeMajan = false;
+                                }
                             }
                         }
                     }
@@ -256,6 +260,7 @@ GameMgr::Update()
             }else{
                 taiNum = -1;
                 winner = -1;
+                justTai = true;
                 NowStat = TAI;
             }
             if(aRound->failToFindWinner){
@@ -297,7 +302,8 @@ GameMgr::Draw()
     // game mode
     if (NowStat == INIT)
     {
-    
+        gmTexture->Draw(rR, 0, 0, 720, 1280, 0, 0, 0);
+        gmTexture->Draw(rR, 0, 0, 100, 300,490,420, 1);
     }
     else if (NowStat == MENU)
     {
@@ -335,12 +341,26 @@ GameMgr::Draw()
         if(taiNum != -1){
             int totals = (int)aRound->playerList[winner]->ownedDeck->deck.size();
             aRound->drawTai(rR, 0, 0, 720, 1280, taiNum);
+
+            if(justTai){
+                justTai = false;
+                for(int i = 0; i < totals; i++){
+                    if(aRound->playerList[winner]->ownedDeck->deck[i] == *aRound->m){
+                        aRound->playerList[winner]->ownedDeck->deck.erase(
+                                aRound->playerList[winner]->ownedDeck->deck.begin() + i,
+                                aRound->playerList[winner]->ownedDeck->deck.begin() + i + 1);
+                    }
+                }
+            }
+
             for(int i = 0; i < aRound->playerList[winner]->ownedDeck->deckOut.size(); i++){
                 aRound->playerList[winner]->ownedDeck->deckOut[i].drawMajan(rR, 50 + i * 55, 200, 72, 50);
             }
             for(int i = 0; i < totals; i++){
                 aRound->playerList[winner]->ownedDeck->deck[i].drawMajan(rR, 50 + i * 55, 300, 72, 50);
             }
+            aRound->m->drawMajan(rR, 70 + totals * 55, 300, 72, 50);
+
             aRound->tRound->Draw(rR, 0, 0, 80, 80, 500, 50, 12 + winner + 1);
             aRound->tRound->Draw(rR, 0, 0, 40, 200, 300, 70, 43);
             if(biggerAgain){
