@@ -265,7 +265,15 @@ GameMgr::Update()
         }
         case TAI:
         {
-
+            biggerAgain = false;
+            if(mouseX > 540 && mouseX < 740){
+                if(mouseY > 620 && mouseY < 660){
+                    biggerAgain = true;
+                    if(mouseLeftTrigger){
+                        NowStat = INIT;
+                    }
+                }
+            }
             for(int i = 0; i < 4; i++){
                 if(aRound->playerList[i]->win){
                     winner = i;
@@ -333,7 +341,14 @@ GameMgr::Draw()
             for(int i = 0; i < totals; i++){
                 aRound->playerList[winner]->ownedDeck->deck[i].drawMajan(rR, 50 + i * 55, 300, 72, 50);
             }
-            aRound->tRound->Draw(rR, 0, 0, 100, 100, 400, 50, 12 + winner + 1);
+            aRound->tRound->Draw(rR, 0, 0, 80, 80, 500, 50, 12 + winner + 1);
+            aRound->tRound->Draw(rR, 0, 0, 40, 200, 300, 70, 43);
+            if(biggerAgain){
+                aRound->tRound->Draw(rR, 0, 0, 50, 220, 530, 615, 44);
+            }else{
+                aRound->tRound->Draw(rR, 0, 0, 40, 200, 540, 620, 44);
+            }
+
         }
     }
 }

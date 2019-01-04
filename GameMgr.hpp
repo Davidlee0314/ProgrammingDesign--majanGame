@@ -59,6 +59,7 @@ private:
 
     //-----Status for Drawing-------------
     bool mouseEnterStart;
+    bool biggerAgain;
     int ctrl;
 
     //for Dice

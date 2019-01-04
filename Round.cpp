@@ -129,6 +129,8 @@ void Round::readImage(){
     tRound->LoadImagePNG("taiMeet15", rR);      //40
     tRound->LoadImagePNG("taiMeet16", rR);      //41
     tRound->LoadImagePNG("taiMeet17", rR);      //42
+    tRound->LoadImagePNG("player", rR);      //43
+    tRound->LoadImagePNG("again", rR);      //44
 }
 void Round::drawOption(int x, int y, int h, int w, int index){
     tRound->Draw(rR, 0 ,0, h, w, x ,y, index);
@@ -623,7 +625,17 @@ void Round::updatePlayerAction(int x, int y, bool mouseL){
                     action.push_back(1);
                     if(!choose.empty()){
                         if(choose[0] == 1){
-                            finishEat = false;
+                            if(eatIndex.size() == 2){
+                                playerList[0]->ownedDeck->eat(*m, playerList[0]->ownedDeck->deck[eatIndex[0]],
+                                                              playerList[0]->ownedDeck->deck[eatIndex[1]]);
+                                haidi->deck.erase(haidi->deck.end() - 1, haidi->deck.end());
+                                playerNow = 0;
+                                justAction = true;
+                                finishEat = true;
+                                eatIndex.clear();
+                            }else{
+                                finishEat = false;
+                            }
                         }
                     }
                 }

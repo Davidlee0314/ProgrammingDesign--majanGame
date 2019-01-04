@@ -156,21 +156,9 @@ void Deck::delMajan(Majan* m, int num){
 }
 
 void Deck::eat(Majan a, Majan b, Majan c){
-    if(a.compare(&b)){
-        this->deckOut.push_back(a);
-        this->deckOut.push_back(b);
-        this->deckOut.push_back(c);
-    } else{
-        if(a.compare(&c)){
-            this->deckOut.push_back(b);
-            this->deckOut.push_back(a);
-            this->deckOut.push_back(c);
-        }else{
-            this->deckOut.push_back(b);
-            this->deckOut.push_back(c);
-            this->deckOut.push_back(a);
-        }
-    }
+    this->deckOut.push_back(b);
+    this->deckOut.push_back(a);
+    this->deckOut.push_back(c);
     this->delMajan(&b, 1);
     this->delMajan(&c, 1);
 }
