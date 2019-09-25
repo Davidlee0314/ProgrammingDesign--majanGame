@@ -12,11 +12,11 @@ void Option::addOption(Majan a) {
 }
 
 void Option::print(){
-    cout << "打 ";
-    giveOut.print();
-    cout << " 聽 ";
-    for(int i = 0; i < listenTo.size(); i++){
-        listenTo[i].print();
-    }
-    cout << endl;
+//    cout << "打 ";
+//    giveOut.print();
+//    cout << " 聽 ";
+//    for(int i = 0; i < listenTo.size(); i++){
+//        listenTo[i].print();
+//    }
+//    cout << endl;
 }

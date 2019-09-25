@@ -138,11 +138,11 @@ void Player::refresh(){
     howManyTurn++;
     left.push_back(ownedDeck->deck[ownedDeck->deck.size() - 1]);
     sort(left);
-    cout << "******** Left驗證 ***********" <<endl;
-    for(int i = 0; i < left.size(); i++){
-        left[i].print();
-    }
-    cout << endl;
+//    cout << "******** Left驗證 ***********" <<endl;
+//    for(int i = 0; i < left.size(); i++){
+//        left[i].print();
+//    }
+//    cout << endl;
     leftToThree(left, threeCount);
     if(howManyTurn > 4 && eyeCount == 0){
         for(int j = 0; j < left.size() - 1; j++){

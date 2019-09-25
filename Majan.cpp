@@ -142,85 +142,85 @@ bool Majan::operator<=(Majan a) {
 }
 
 void Majan::print(){
-    switch (this->type){
-        case 0:
-            switch (this->num){
-                case 0:
-                    cout << "<空> ";
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case 1:
-            switch (this->num){
-                case 1:
-                    cout << "春   ";
-                    break;
-                case 2:
-                    cout << "夏   ";
-                    break;
-                case 3:
-                    cout << "秋   ";
-                    break;
-                case 4:
-                    cout << "冬   ";
-                    break;
-                case 5:
-                    cout << "梅   ";
-                    break;
-                case 6:
-                    cout << "蘭   ";
-                    break;
-                case 7:
-                    cout << "竹   ";
-                    break;
-                case 8:
-                    cout << "菊   ";
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case 2:
-            switch (this->num){
-                case 1:
-                    cout << "東   ";
-                    break;
-                case 2:
-                    cout << "南   ";
-                    break;
-                case 3:
-                    cout << "西   ";
-                    break;
-                case 4:
-                    cout << "北   ";
-                    break;
-                case 5:
-                    cout << "中   ";
-                    break;
-                case 6:
-                    cout << "發   ";
-                    break;
-                case 7:
-                    cout << "白   ";
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case 3:
-            cout << this->num << " 萬 ";
-            break;
-        case 4:
-            cout << this->num << " 筒 ";
-            break;
-        case 5:
-            cout << this->num << " 條 ";
-            break;
-        default:
-            break;
-    }
+//    switch (this->type){
+//        case 0:
+//            switch (this->num){
+//                case 0:
+//                    cout << "<空> ";
+//                    break;
+//                default:
+//                    break;
+//            }
+//            break;
+//        case 1:
+//            switch (this->num){
+//                case 1:
+//                    cout << "春   ";
+//                    break;
+//                case 2:
+//                    cout << "夏   ";
+//                    break;
+//                case 3:
+//                    cout << "秋   ";
+//                    break;
+//                case 4:
+//                    cout << "冬   ";
+//                    break;
+//                case 5:
+//                    cout << "梅   ";
+//                    break;
+//                case 6:
+//                    cout << "蘭   ";
+//                    break;
+//                case 7:
+//                    cout << "竹   ";
+//                    break;
+//                case 8:
+//                    cout << "菊   ";
+//                    break;
+//                default:
+//                    break;
+//            }
+//            break;
+//        case 2:
+//            switch (this->num){
+//                case 1:
+//                    cout << "東   ";
+//                    break;
+//                case 2:
+//                    cout << "南   ";
+//                    break;
+//                case 3:
+//                    cout << "西   ";
+//                    break;
+//                case 4:
+//                    cout << "北   ";
+//                    break;
+//                case 5:
+//                    cout << "中   ";
+//                    break;
+//                case 6:
+//                    cout << "發   ";
+//                    break;
+//                case 7:
+//                    cout << "白   ";
+//                    break;
+//                default:
+//                    break;
+//            }
+//            break;
+//        case 3:
+//            cout << this->num << " 萬 ";
+//            break;
+//        case 4:
+//            cout << this->num << " 筒 ";
+//            break;
+//        case 5:
+//            cout << this->num << " 條 ";
+//            break;
+//        default:
+//            break;
+//    }
 }
 
 bool Majan::compare(Majan* a){

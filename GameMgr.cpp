@@ -7,7 +7,7 @@
 //
 #include <thread>
 #include <chrono>
-#include "windows.h"
+//#include "windows.h"
 #include "GameMgr.hpp"
 #include "Texture.hpp"
 #include "Round.hpp"
@@ -184,22 +184,22 @@ GameMgr::Update()
         }
         case PLAYER:
         {
-            if(aRound->playerNow != 0){
-                cout << "####################################" << endl;
-                aRound->totals->print();
-                cout << "####################################" << endl;
-                for(int i = 0; i < 4; i ++){
-                    cout << endl;
-                    cout << "============Player " << i + 1 << " =================" << endl;
-                    aRound->playerList[i]->ownedDeck->print();
-                    cout << endl << " ------------left---------------" << endl;
-                    for(int j = 0; j < aRound->playerList[i]->left.size(); j++){
-                        aRound->playerList[i]->left[j].print();
-                    }
-                    cout << endl << "=====================================" << endl;
-                    cout << endl;
-                }
-            }
+//            if(aRound->playerNow != 0){
+//                cout << "####################################" << endl;
+//                aRound->totals->print();
+//                cout << "####################################" << endl;
+//                for(int i = 0; i < 4; i ++){
+//                    cout << endl;
+//                    cout << "============Player " << i + 1 << " =================" << endl;
+//                    aRound->playerList[i]->ownedDeck->print();
+//                    cout << endl << " ------------left---------------" << endl;
+//                    for(int j = 0; j < aRound->playerList[i]->left.size(); j++){
+//                        aRound->playerList[i]->left[j].print();
+//                    }
+//                    cout << endl << "=====================================" << endl;
+//                    cout << endl;
+//                }
+//            }
 
             ctrl = aCondition->updateCondtion(mouseX, mouseY, mouseLeftTrigger);
             switch (ctrl) {

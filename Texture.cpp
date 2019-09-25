@@ -8,6 +8,11 @@
 
 #include "Texture.hpp"
 #include <SDL.h>
+
+//#ifdef _LIBCPP_VERSION
+//template const char* std::string::c_str() const;
+//#endif
+
 Texture::Texture()
 {
 }
@@ -53,11 +58,10 @@ Texture::Draw(SDL_Renderer * rR, int iXOffset, int iYOffset,int h,int w, int x,i
 //    SDL_RenderCopy(rR, images[iFrame], nullptr, &rRect);
 //}
 
-void
-Texture::LoadImagePNG(string fileName, SDL_Renderer * rR)
+void Texture::LoadImagePNG(string fileName, SDL_Renderer* rR)
 {
 //    cout << "load" << fileName << "\n";
-    fileName = "/Files/C++ programming/majanGame/Image/" + fileName + ".png";
+    fileName = "/Users/davidlee/C++/majanGame/Image/" + fileName + ".png";
     SDL_Surface* loadedSurface = IMG_Load(fileName.c_str());
     
     if(loadedSurface==nullptr)

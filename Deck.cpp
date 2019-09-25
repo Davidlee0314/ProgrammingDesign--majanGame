@@ -452,18 +452,18 @@ void Deck::putDeckOut(int pos, int num){
 }
 
 void Deck::print(){
-    cout << "<手牌>" << endl;
-    for(int i = 0; i < this->deck.size(); i++){
-        if(i % 36 == 0 && i != 0){
-            cout << endl;
-        }
-        this->deck[i].print();
-    }
-    cout << endl << "<牌面>" << endl;
-    for(auto i = 0; i < this->deckOut.size(); i++){
-        this->deckOut[i].print();
-    }
-    cout << endl;
+//    cout << "<手牌>" << endl;
+//    for(int i = 0; i < this->deck.size(); i++){
+//        if(i % 36 == 0 && i != 0){
+//            cout << endl;
+//        }
+//        this->deck[i].print();
+//    }
+//    cout << endl << "<牌面>" << endl;
+//    for(auto i = 0; i < this->deckOut.size(); i++){
+//        this->deckOut[i].print();
+//    }
+//    cout << endl;
 }
 
 void Deck::sort(){
